@@ -42,45 +42,37 @@ void Socket::bind(unsigned short port)
 	int opt = 1;
 	int result = setsockopt(this->handle, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	
-	#ifdef SOCKET_CHECK_ERRORS
 	if (result != 0)
 	{
-		HelpPrinter::print(LOG_ERROR, "error setting socket options, error %d\n", errno);
+		printf("error setting socket options, error %d\n", errno);
 	}
-	#endif
 	
 	const sockaddr_in address = Socket::create_address(port);
 	result = ::bind(this->handle, (const sockaddr*) &address, sizeof(address));
 	
-	#ifdef SOCKET_CHECK_ERRORS
 	if (result != 0)
 	{
-		HelpPrinter::print(LOG_ERROR, "error binding socket %d\n", errno);
+		printf("error binding socket %d\n", errno);
 	}
-	#endif
 }
 
 bool Socket::connect(const char* host, unsigned short port)
 {
 	hostent *hostip = gethostbyname(host);
 	
-	#ifdef SOCKET_CHECK_ERRORS
 	if (!hostip)
 	{
-		HelpPrinter::print(LOG_ERROR, "couldn't get host from %hu, error %d\n", port, errno);
+		printf("couldn't get host from %hu, error %d\n", port, errno);
 	}
-	#endif
 
 	sockaddr_in address = Socket::create_address(*(in_addr*) hostip->h_addr_list[0], port);
 	
 	int result = ::connect(this->handle, (const sockaddr*) &address, sizeof(address));
 	
-	#ifdef SOCKET_CHECK_ERRORS
 	if (result != 0)
 	{
-		HelpPrinter::print(LOG_ERROR, "couldn't connect to %s %hu, error %d\n", host, port, errno);
+		printf("couldn't connect to %s %hu, error %d\n", host, port, errno);
 	}
-	#endif
     
     if (result == 0)
     {
